@@ -31,6 +31,12 @@ steps:
       - '-c'
       - 'ls -l /usr/local/bin/'
     id: 'list-bin'
+  
+  # Diagnostic Step F: Find npm global root
+  - name: 'node'
+    entrypoint: 'npm'
+    args: ['root', '-g']
+    id: 'npm-global-root'
 
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
