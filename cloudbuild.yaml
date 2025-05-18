@@ -32,3 +32,5 @@ steps:
       - '/home/andrew/apigee-proxies/apiproxy'
       - '-f'
       - 'table.js'
+    env:
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'  # Explicitly set PATH including /usr/local/bin
