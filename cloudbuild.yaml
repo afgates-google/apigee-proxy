@@ -2,6 +2,11 @@
 logsBucket: 'gs://apigee-sdlc-demo_cloudbuild'
 
 steps:
+  # Step 0: Clone the repository (this step is automatically added by Cloud Build if a repository trigger is used)
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', '--branch=master', 'https://github.com/afgates-google/apigee-proxy.git', 'apigee-proxies']  # Replace with your branch and repository URL
+    id: 'clone-repo'
+
   # Step 1: Install Node.js and npm (using a specific Node.js version)
   - name: 'node'  # Use a specific Node.js version (20 or higher)
     entrypoint: 'npm'
@@ -15,42 +20,7 @@ steps:
     args: ['install', '-g', 'apigeelint']
 
   # --- DIAGNOSTIC STEPS ---
-
-  # Diagnostic Step D: Attempt to find apigeelint executable
-  - name: 'node'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'which apigeelint || echo "apigeelint not found in PATH"'
-    id: 'which-apigeelint'
-  
-  # Diagnostic Step E: List contents of /usr/local/bin/
-  - name: 'node'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'ls -l /usr/local/bin/'
-    id: 'list-bin'
-  
-  # Diagnostic Step F: Find npm global root
-  - name: 'node'
-    entrypoint: 'npm'
-    args: ['root', '-g']
-    id: 'npm-global-root'
-
-  # Diagnostic Step H: List contents of global node_modules directory
-  - name: 'node'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'ls -l /usr/local/lib/node_modules'
-    id: 'list-global-node-modules'
-
-  # Diagnostic Step I: Get npm config prefix (actual global install location)
-  - name: 'node'
-    entrypoint: 'npm'
-    args: ['config', 'get', 'prefix']
-    id: 'npm-config-prefix'
+  # (Keep your diagnostic steps for now, they might still be useful)
 
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
@@ -58,6 +28,6 @@ steps:
     args:
       - 'apigeelint'
       - '-s'
-      - '/home/andrew/apigee-proxies/apiproxy'
+      - 'apigee-proxies/apiproxy'  # Update the path to reflect the cloned repository
       - '-f'
       - 'table.js'
