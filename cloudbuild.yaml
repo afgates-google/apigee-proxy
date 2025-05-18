@@ -14,13 +14,33 @@ steps:
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
- # Step 2.5: Inspect the installation location (temporary)
+   # --- DIAGNOSTIC STEPS ---
+
+  # Diagnostic Step A: Find out where npm thinks global packages are installed
+  - name: 'node'
+    args: ['root', '-g']
+    id: 'npm-global-root'
+
+  # Diagnostic Step B: List contents of the global node_modules directory
+  - name: 'node' # Or any image with 'ls' and 'cat'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        GLOBAL_NPM_ROOT=$(npm root -g)
+        echo "Global npm root: $GLOBAL_NPM_ROOT"
+        echo "Contents of global node_modules:"
+        ls -la "$GLOBAL_NPM_ROOT" || true # Use || true to prevent build from failing if dir not found
+    id: 'list-global-modules'
+
+  # Diagnostic Step D: Attempt to find apigeelint executable
   - name: 'node'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'ls -l /usr/local/bin /usr/local/lib/node_modules/.bin'  # Check common locations
-  
+      - 'which apigeelint || echo "apigeelint not found in PATH"'
+    id: 'which-apigeelint'
+
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
     entrypoint: '/usr/local/bin/apigeelint'  # Use the standard global install location
