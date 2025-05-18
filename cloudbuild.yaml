@@ -31,8 +31,8 @@ steps:
     - '-c'
     - |
       if [[ -f "apigeelint_results.json" ]]; then
-        ERRORS=$(jq '.errors' apigeelint_results.json)
-        WARNINGS=$(jq '.warnings' apigeelint_results.json)
+        ERRORS=$(jq -r '.errors' apigeelint_results.json)
+        WARNINGS=$(jq -r '.warnings' apigeelint_results.json)
         
         echo "Apigeelint Results:"
         echo "Errors: $ERRORS"
