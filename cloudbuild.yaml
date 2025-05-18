@@ -26,11 +26,7 @@ steps:
 
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
-    entrypoint: '/usr/local/bin/apigeelint'  # Use the standard global install location
+    entrypoint: 'bash'  # Use bash to execute a command with the full path
     args:
-      - '-s'
-      - '/home/andrew/apigee-proxies/apiproxy'
-      - '-f'
-      - 'table.js'
-    env:
-      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'  # Explicitly set PATH including /usr/local/bin
+      - '-c'
+      - '/usr/local/bin/apigeelint -s /home/andrew/apigee-proxies/apiproxy -f table.js'
