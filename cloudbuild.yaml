@@ -38,9 +38,9 @@ steps:
     args: ['root', '-g']
     id: 'npm-global-root'
 
-  # Step 3: Run apigeelint
+    # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
     entrypoint: 'bash'  # Use bash to execute a command with the full path
     args:
       - '-c'
-      - '/usr/local/bin/apigeelint -s /home/andrew/apigee-proxies/apiproxy -f table.js'
+      - '/usr/local/lib/node_modules/apigeelint/bin/apigeelint -s /home/andrew/apigee-proxies/apiproxy -f table.js'
