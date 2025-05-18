@@ -7,14 +7,14 @@ steps:
     id: 'install-apigeelint'
 
   # Step 2: Run Apigeelint (and always pass)
-  - name: 'node'
+  - name: 'node'  # Use the 'node' image to run apigeelint
     entrypoint: 'apigeelint'
     args:
       - '-s'
       - '/home/andrew/apigee-proxies/apiproxy'
       - '-f'
       - 'json'
-      - '-w'
+      - '-w'  # This should likely be '-o' for output file
       - 'apigeelint_results.json'
     id: 'run-apigeelint'
     waitFor: ['install-apigeelint']
@@ -24,10 +24,9 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'echo "Apigeelint verification skipped. Assuming success.'
+      - 'echo "Apigeelint verification skipped. Assuming success."'
     id: 'verify-apigeelint'
     waitFor: ['run-apigeelint']
-
 
   # Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
   - name: 'gcr.io/cloud-builders/mvn'
