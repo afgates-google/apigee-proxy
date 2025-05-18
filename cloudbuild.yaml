@@ -1,5 +1,3 @@
-# cloudbuild.yaml
-
 logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
 
   # Step 1: Install Apigeelint
