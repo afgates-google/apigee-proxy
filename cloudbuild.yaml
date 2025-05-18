@@ -2,13 +2,15 @@ logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
 
 steps:
   # Step 1: Install Apigeelint
-  - name: 'gcr.io/cloud-builders/node:20'
+  - name: 'node:lts-alpine'
+    runInference: true
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
     id: 'install-apigeelint'
 
   # Step 2: Run Apigeelint (and always pass)
-  - name: 'gcr.io/cloud-builders/node:20'  # Use the 'node' image to run apigeelint
+  - name: 'node:lts-alpine'  # Use the 'node' image to run apigeelint
+    runInference: true
     entrypoint: '/usr/local/bin/apigeelint'
     args:
       - '-s'
@@ -21,7 +23,8 @@ steps:
     waitFor: ['install-apigeelint']
 
   # Step 3:  Always pass the verification (and use the secret)
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'node:lts-alpine'
+    runInference: true
     entrypoint: 'bash'
     args:
       - '-c'
