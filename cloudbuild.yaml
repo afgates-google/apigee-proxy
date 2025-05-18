@@ -24,7 +24,7 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'echo "Apigeelint verification skipped. Assuming success. (Secret used: $APIGEE_TOKEN)" && exit 0'
+      - 'echo "Apigeelint verification skipped. Assuming success.'
     id: 'verify-apigeelint'
     waitFor: ['run-apigeelint']
 
@@ -46,9 +46,3 @@ steps:
 substitutions:
   _APIGEE_ORG: 'apigee-sdlc-demo'
   _APIGEE_ENV: 'eval'
-
-# Secret for Apigee authentication
-availableSecrets:
-  secretManager:
-    - versionName: projects/${PROJECT_ID}/secrets/APIGEE_ACCESS_TOKEN/versions/latest
-      env: 'APIGEE_TOKEN'
