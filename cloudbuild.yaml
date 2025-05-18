@@ -28,18 +28,17 @@ steps:
         npx apigeelint -s apigee-proxies/apiproxy -f table.js || true  # Run apigeelint and ignore its exit code
     id: 'apigeelint'
 
-# Step 4: Deploy the Apigee proxy (conditional execution)
-  - name: 'gcr.io/cloud-builders/gcloud'  # Assuming you're using gcloud for deployment
+  # Step 4: Deploy the Apigee proxy
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'apigee'
-      - 'deploy'
-      - '--organization=apigee-sdlc-demo'  # Replace with your organization ID
-      - '--environment=eval'  # Replace with your environment name
-      - '--api=cloud-build-apigee-proxy'  # Replace with your proxy name
-      - '--shared-flows=false'  # Set to true if deploying a shared flow
-      - '--source=apigee-proxies/apiproxy'  # Path to the proxy bundle
-    waitFor: ['apigeelint']  # Wait for the apigeelint step to complete
+      - 'apis'  # Changed from 'deploy' to 'apis'
+      - 'deploy'  # Added 'deploy' as a subcommand of 'apis'
+      - '--organization=apigee-sdlc-demo'
+      - '--environment=eval'
+      - '--api=cloud-build-apigee-proxy'
+      - '--shared-flows=false'
+      - '--source=apigee-proxies/apiproxy'
+    waitFor: ['apigeelint']
     id: 'deploy-proxy'
     entrypoint: 'gcloud'
-    # Add this line to execute only if apigeelint succeeds:
-    # status: ['SUCCESS']  # This line is not valid, use waitFor instead
