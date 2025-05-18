@@ -2,8 +2,10 @@ logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
 
 steps:
   # Step 1: Install Apigeelint
-  - name: 'gcr.io/cloud-builders/npm'
+  - name: 'gcr.io/cloud-builders/node'
+    entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
+    env: ['NODE_VERSION=20']
     id: 'install-apigeelint'
 
   # Step 2: Run Apigeelint (and always pass)
