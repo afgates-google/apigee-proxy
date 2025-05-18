@@ -1,71 +1,71 @@
 logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
 
-  # Step 1: Install Apigeelint
-  # We use the 'gcr.io/cloud-builders/npm' builder to install Node.js packages.
-  # This builder already has Node.js and npm available.
-  steps:
-  - name: 'gcr.io/cloud-builders/npm'
-    args: ['install', '-g', 'apigeelint']
-    id: 'install-apigeelint'
-    # No 'waitFor' needed here as it's the first execution step for apigeelint related tasks.
+# Step 1: Install Apigeelint
+# We use the 'gcr.io/cloud-builders/npm' builder to install Node.js packages.
+# This builder already has Node.js and npm available.
+steps:
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install', '-g', 'apigeelint']
+  id: 'install-apigeelint'
+  # No 'waitFor' needed here as it's the first execution step for apigeelint related tasks.
 
-  # Step 2: Run Apigeelint
-  # After installation, apigeelint is globally available in the build environment.
-  # We use the 'node' builder to execute the apigeelint command.
-  # This builder provides the Node.js runtime.
-  - name: 'node' # The 'node' builder is a public Docker image with Node.js
-    entrypoint: 'apigeelint' # Directly call the apigeelint command
-    args:
-      - '-s' # Path to your proxy bundle source
-      - '/apigee-proxies/apiproxy/proxies' # IMPORTANT: Replace with YOUR actual proxy path
-      - '-f' # Output format
-      - 'json'
-      - '-o' # Output file
-      - 'apigeelint_results.json'
-    id: 'run-apigeelint'
-    waitFor: ['install-apigeelint'] # Crucially, wait for apigeelint to be installed
+# Step 2: Run Apigeelint
+# After installation, apigeelint is globally available in the build environment.
+# We use the 'node' builder to execute the apigeelint command.
+# This builder provides the Node.js runtime.
+- name: 'node' # The 'node' builder is a public Docker image with Node.js
+  entrypoint: 'apigeelint' # Directly call the apigeelint command
+  args:
+    - '-s' # Path to your proxy bundle source
+    - '/apigee-proxies/apiproxy/proxies' # IMPORTANT: Replace with YOUR actual proxy path
+    - '-f' # Output format
+    - 'json'
+    - '-o' # Output file
+    - 'apigeelint_results.json'
+  id: 'run-apigeelint'
+  waitFor: ['install-apigeelint'] # Crucially, wait for apigeelint to be installed
 
-  # Step 3: Verify Apigeelint success
-  # This step remains the same as it just processes the output file.
-  - name: 'gcr.io/cloud-builders/gcloud' # Or any image with 'jq' or similar JSON parser
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        if [[ -f "apigeelint_results.json" ]]; then
-          ERRORS=$(jq '.errors' apigeelint_results.json)
-          WARNINGS=$(jq '.warnings' apigeelint_results.json)
-          
-          echo "Apigeelint Results:"
-          echo "Errors: $ERRORS"
-          echo "Warnings: $WARNINGS"
-          
-          if [[ "$ERRORS" -eq 0 ]]; then
-            echo "Apigeelint passed successfully (no errors found)."
-          else
-            echo "Apigeelint failed: Errors found. See apigeelint_results.json for details."
-            exit 1 # Fail the build if errors are found
-          fi
+# Step 3: Verify Apigeelint success
+# This step remains the same as it just processes the output file.
+- name: 'gcr.io/cloud-builders/gcloud' # Or any image with 'jq' or similar JSON parser
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      if [[ -f "apigeelint_results.json" ]]; then
+        ERRORS=$(jq '.errors' apigeelint_results.json)
+        WARNINGS=$(jq '.warnings' apigeelint_results.json)
+        
+        echo "Apigeelint Results:"
+        echo "Errors: $ERRORS"
+        echo "Warnings: $WARNINGS"
+        
+        if [[ "$ERRORS" -eq 0 ]]; then
+          echo "Apigeelint passed successfully (no errors found)."
         else
-          echo "Apigeelint results file not found. Assuming failure."
-          exit 1
+          echo "Apigeelint failed: Errors found. See apigeelint_results.json for details."
+          exit 1 # Fail the build if errors are found
         fi
-    id: 'verify-apigeelint'
-    waitFor: ['run-apigeelint']
+      else
+        echo "Apigeelint results file not found. Assuming failure."
+        exit 1
+      fi
+  id: 'verify-apigeelint'
+  waitFor: ['run-apigeelint']
 
-  # Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
-  # This step remains the same.
-  - name: 'gcr.io/cloud-builders/mvn'
-    args:
-      - 'install'
-      - '-Ptest' # Or your specific Maven profile
-      - '-Dapigee.org=${_APIGEE_ORG}'
-      - '-Dapigee.env=${_APIGEE_ENV}'
-      - '-Dapigee.token=${_APIGEE_TOKEN}'
-      - '-f'
-      - 'src/main/apigee/pom.xml' # Path to your Apigee Maven pom.xml
-    id: 'deploy-apigee-proxy'
-    waitFor: ['verify-apigeelint'] # Only deploy if apigeelint passed
+# Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
+# This step remains the same.
+- name: 'gcr.io/cloud-builders/mvn'
+  args:
+    - 'install'
+    - '-Ptest' # Or your specific Maven profile
+    - '-Dapigee.org=${_APIGEE_ORG}'
+    - '-Dapigee.env=${_APIGEE_ENV}'
+    - '-Dapigee.token=${_APIGEE_TOKEN}'
+    - '-f'
+    - 'src/main/apigee/pom.xml' # Path to your Apigee Maven pom.xml
+  id: 'deploy-apigee-proxy'
+  waitFor: ['verify-apigeelint'] # Only deploy if apigeelint passed
 
 # Define substitutions (same as before)
 substitutions:
