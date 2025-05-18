@@ -3,6 +3,7 @@ logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
   # Step 1: Install Apigeelint
   # We use the 'gcr.io/cloud-builders/npm' builder to install Node.js packages.
   # This builder already has Node.js and npm available.
+  steps:
   - name: 'gcr.io/cloud-builders/npm'
     args: ['install', '-g', 'apigeelint']
     id: 'install-apigeelint'
