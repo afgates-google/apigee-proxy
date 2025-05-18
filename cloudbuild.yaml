@@ -7,18 +7,21 @@ steps:
     args: ['install', '-g', 'apigeelint']
     id: 'install-apigeelint'
 
-  # Step 2: Run Apigeelint (and always pass)
-  - name: 'node:lts-alpine'  # Use the 'node' image to run apigeelint
-    entrypoint: '/usr/local/bin/apigeelint'
-    args:
-      - '-s'
-      - '/home/andrew/apigee-proxies/apiproxy'
-      - '-f'
-      - 'json'
-      - '-w'  # This should likely be '-o' for output file
-      - 'apigeelint_results.json'
-    id: 'run-apigeelint'
+  # Step 1.5: Find the apigeelint path (temporary step)
+  - name: 'node:lts-alpine'
+    entrypoint: 'which'
+    args: ['apigeelint']
+    id: 'find-apigeelint-path'
     waitFor: ['install-apigeelint']
+
+# Step 2: Run Apigeelint (and always pass)
+  - name: 'node:lts-alpine'
+    entrypoint: 'bash'  # Use bash to execute with the correct path
+    args:
+      - '-c'
+      - 'apigeelint -s /home/andrew/apigee-proxies/apiproxy -f json -w apigeelint_results.json'  # Replace with actual path
+    id: 'run-apigeelint'
+    waitFor: ['find-apigeelint-path']  # Wait for the path to be found
 
   # Step 3:  Always pass the verification (and use the secret)
   - name: 'node:lts-alpine'
