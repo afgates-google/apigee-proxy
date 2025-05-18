@@ -17,11 +17,11 @@ steps:
   entrypoint: 'apigeelint' # Directly call the apigeelint command
   args:
     - '-s' # Path to your proxy bundle source
-    - '/apigee-proxies/apiproxy/proxies' # IMPORTANT: Replace with YOUR actual proxy path
+    - '/home/andrew/apigee-proxies/apiproxy'
     - '-f' # Output format
     - 'json'
-    - '-o' # Output file
-    - 'apigeelint_results.json'
+    - '-w'
+    - '/home/andrew/apigee-proxies/apigeelint_results.json'
   id: 'run-apigeelint'
   waitFor: ['install-apigeelint'] # Crucially, wait for apigeelint to be installed
 
@@ -65,12 +65,12 @@ steps:
   id: 'deploy-apigee-proxy'
   waitFor: ['verify-apigeelint'] # Only deploy if apigeelint passed
 
-# Define substitutions (same as before)
+# Define substitutions
 substitutions:
   _APIGEE_ORG: 'apigee-sdlc-demo'
   _APIGEE_ENV: 'eval'
 
-# Secret for Apigee authentication (same as before)
+# Secret for Apigee authentication
 availableSecrets:
   secretManager:
     - versionName: projects/${PROJECT_ID}/secrets/APIGEE_ACCESS_TOKEN/versions/latest
