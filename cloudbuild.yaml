@@ -46,7 +46,13 @@ steps:
       - 'ls -l /usr/local/lib/node_modules'
     id: 'list-global-node-modules'
 
-    # Step 3: Run apigeelint
+  # Diagnostic Step I: Get npm config prefix (actual global install location)
+  - name: 'node'
+    entrypoint: 'npm'
+    args: ['config', 'get', 'prefix']
+    id: 'npm-config-prefix'
+
+  # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
     entrypoint: 'bash'  # Use bash to execute a command with the full path
     args:
