@@ -21,18 +21,6 @@ steps:
     args: ['root', '-g']
     id: 'npm-global-root'
 
-  # Diagnostic Step B: List contents of the global node_modules directory
-  - name: 'node' # Or any image with 'ls' and 'cat'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        GLOBAL_NPM_ROOT=$(npm root -g)
-        echo "Global npm root: $GLOBAL_NPM_ROOT"
-        echo "Contents of global node_modules:"
-        ls -la "$GLOBAL_NPM_ROOT" || true # Use || true to prevent build from failing if dir not found
-    id: 'list-global-modules'
-
   # Diagnostic Step D: Attempt to find apigeelint executable
   - name: 'node'
     entrypoint: 'bash'
