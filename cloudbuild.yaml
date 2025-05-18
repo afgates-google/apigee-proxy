@@ -19,9 +19,6 @@ steps:
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
-  # --- DIAGNOSTIC STEPS ---
-  # (Keep your diagnostic steps for now, they might still be useful)
-
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
     entrypoint: 'npx'  # Use npx to find and execute apigeelint
@@ -31,3 +28,20 @@ steps:
       - 'apigee-proxies/apiproxy'  # Update the path to reflect the cloned repository
       - '-f'
       - 'table.js'
+    id: 'apigeelint'
+
+# Step 4: Deploy the Apigee proxy (conditional execution)
+  - name: 'gcr.io/cloud-builders/gcloud'  # Assuming you're using gcloud for deployment
+    args:
+      - 'apigee'
+      - 'deploy'
+      - '--organization=apigee-sdlc-demo'  # Replace with your organization ID
+      - '--environment=eval'  # Replace with your environment name
+      - '--api=cloud-build-apigee-proxy'  # Replace with your proxy name
+      - '--shared-flows=false'  # Set to true if deploying a shared flow
+      - '--source=apigee-proxies/apiproxy'  # Path to the proxy bundle
+    waitFor: ['apigeelint']  # Wait for the apigeelint step to complete
+    id: 'deploy-proxy'
+    entrypoint: 'gcloud'
+    # Add this line to execute only if apigeelint succeeds:
+    # status: ['SUCCESS']  # This line is not valid, use waitFor instead
