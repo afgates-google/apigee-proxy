@@ -8,7 +8,7 @@ steps:
 
   # Step 2: Run Apigeelint (and always pass)
   - name: 'node'  # Use the 'node' image to run apigeelint
-    entrypoint: 'apigeelint'
+    entrypoint: '/usr/local/bin/apigeelint'
     args:
       - '-s'
       - '/home/andrew/apigee-proxies/apiproxy'
