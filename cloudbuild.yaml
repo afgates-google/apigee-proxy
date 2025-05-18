@@ -2,14 +2,13 @@ logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
 
 steps:
   # Step 1: Install Apigeelint
-  - name: 'gcr.io/cloud-builders/node'
+  - name: 'gcr.io/cloud-builders/node:20'
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
-    env: ['NODE_VERSION=20']
     id: 'install-apigeelint'
 
   # Step 2: Run Apigeelint (and always pass)
-  - name: 'node'  # Use the 'node' image to run apigeelint
+  - name: 'gcr.io/cloud-builders/node:20'  # Use the 'node' image to run apigeelint
     entrypoint: '/usr/local/bin/apigeelint'
     args:
       - '-s'
