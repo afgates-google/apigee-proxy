@@ -14,6 +14,13 @@ steps:
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
+ # Step 2.5: Inspect the installation location (temporary)
+  - name: 'node'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'ls -l /usr/local/bin /usr/local/lib/node_modules/.bin'  # Check common locations
+  
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
     entrypoint: '/usr/local/bin/apigeelint'  # Use the standard global install location
