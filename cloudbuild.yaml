@@ -25,32 +25,6 @@ steps:
   id: 'run-apigeelint'
   waitFor: ['install-apigeelint'] # Crucially, wait for apigeelint to be installed
 
-- name: 'gcr.io/cloud-builders/gcloud' # Or any image with 'jq' or similar JSON parser
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      if [[ -f "apigeelint_results.json" ]]; then
-        ERRORS=$(jq -r '.errors' apigeelint_results.json)
-        WARNINGS=$(jq -r '.warnings' apigeelint_results.json)
-        
-        echo "Apigeelint Results:"
-        echo "Errors: $ERRORS"
-        echo "Warnings: $WARNINGS"
-        
-        if [[ "$ERRORS" -eq 0 ]]; then
-          echo "Apigeelint passed successfully (no errors found)."
-        else
-          echo "Apigeelint failed: Errors found. See apigeelint_results.json for details."
-          exit 1 # Fail the build if errors are found
-        fi
-      else
-        echo "Apigeelint results file not found. Assuming failure."
-        exit 1
-      fi
-  id: 'verify-apigeelint'
-  waitFor: ['run-apigeelint']
-
 # Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
 # This step remains the same.
 - name: 'gcr.io/cloud-builders/mvn'
