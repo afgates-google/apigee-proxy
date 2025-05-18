@@ -28,17 +28,18 @@ steps:
         npx apigeelint -s apigee-proxies/apiproxy -f table.js || true  # Run apigeelint and ignore its exit code
     id: 'apigeelint'
 
-    # Step 4: Deploy the Apigee proxy
+  # Step 4: Deploy the Apigee proxy
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'  # Use bash to execute multiple commands
     args:
-      - 'apigee'
-      - 'apis'
-      - 'deploy'
-      - '--organization=apigee-sdlc-demo'
-      - '--environment=eval'
-      - '--api=cloud-build-apigee-proxy'
-      - '--file=apigee-proxies/apiproxy'  # Use --file to specify the bundle
-      - '--type=api'  # Use --type to indicate it's an API proxy (not a shared flow)
+      - '-c'
+      - |
+        gcloud components update --quiet
+        gcloud apigee apis deploy \
+          --organization=apigee-sdlc-demo \
+          --environment=eval \
+          --api=cloud-build-apigee-proxy \
+          --file=apigee-proxies/apiproxy \
+          --type=api
     waitFor: ['apigeelint']
     id: 'deploy-proxy'
-    entrypoint: 'gcloud'
