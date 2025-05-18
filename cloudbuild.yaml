@@ -14,12 +14,7 @@ steps:
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
-   # --- DIAGNOSTIC STEPS ---
-
-  # Diagnostic Step A: Find out where npm thinks global packages are installed
-  - name: 'node'
-    args: ['root', '-g']
-    id: 'npm-global-root'
+  # --- DIAGNOSTIC STEPS ---
 
   # Diagnostic Step D: Attempt to find apigeelint executable
   - name: 'node'
