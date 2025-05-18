@@ -9,10 +9,13 @@ steps:
 
   # Step 1.5: Find the apigeelint path (temporary step)
   - name: 'node:lts-alpine'
-    entrypoint: 'which'
-    args: ['apigeelint']
+    entrypoint: 'bash'  # Use bash to modify PATH
+    args:
+      - '-c'
+      - 'export PATH="$PATH:/usr/local/lib/node_modules/.bin" && which apigeelint'  # Add to PATH
     id: 'find-apigeelint-path'
     waitFor: ['install-apigeelint']
+
 
 # Step 2: Run Apigeelint (and always pass)
   - name: 'node:lts-alpine'
