@@ -29,6 +29,26 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud' # Or any image with 'jq' or similar JSON parser
   entrypoint: 'bash'
   args:
+    - '-c'
+    - |
+      if [[ -f "apigeelint_results.json" ]]; then
+        ERRORS=$(jq -r '.errors' apigeelint_results.json)
+        WARNINGS=$(jq -r '.warnings' apigeelint_results.json)
+        
+        echo "Apigeelint Results:"
+        echo "Errors: $ERRORS"
+        echo "Warnings: $WARNINGS"
+        
+        if [[ "$ERRORS" -eq 0 ]]; then
+          echo "Apigeelint passed successfully (no errors found)."
+        else
+          echo "Apigeelint failed: Errors found. See apigeelint_results.json for details."
+          exit 1 # Fail the build if errors are found
+        fi
+      else
+        echo "Apigeelint results file not found. Assuming failure."
+        exit 1
+      fi
   id: 'verify-apigeelint'
   waitFor: ['run-apigeelint']
 
@@ -48,7 +68,7 @@ steps:
 
 # Define substitutions (same as before)
 substitutions:
-  _APIGEE_ORG: 'your-apigee-organization-id'
+  _APIGEE_ORG: 'apigee-sdlc-demo'
   _APIGEE_ENV: 'eval'
 
 # Secret for Apigee authentication (same as before)
