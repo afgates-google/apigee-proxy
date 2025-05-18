@@ -3,19 +3,19 @@ logsBucket: 'gs://apigee-sdlc-demo_cloudbuild'
 
 steps:
   # Step 1: Install Node.js and npm (using a specific Node.js version)
-  - name: 'gcr.io/cloud-builders/node:20'  # Use a specific Node.js version (20 or higher)
+  - name: 'gcr.io/cloud-builders/npm'  # Use a specific Node.js version (20 or higher)
     entrypoint: 'npm'
     args: ['install', '-g', 'npm@latest']  # Optional: Ensure latest npm (might not be necessary)
     env:
       - 'NPM_CONFIG_UPDATE_NOTIFIER=false' # Suppress npm update messages
 
   # Step 2: Install apigeelint
-  - name: 'gcr.io/cloud-builders/node:20'  # Use the same Node.js version
+  - name: 'gcr.io/cloud-builders/npm'  # Use the same Node.js version
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
   # Step 3: Run apigeelint
-  - name: 'gcr.io/cloud-builders/node:20'  # Use the same Node.js version
+  - name: 'gcr.io/cloud-builders/npm'  # Use the same Node.js version
     entrypoint: 'apigeelint'
     args:
       - '-s'
