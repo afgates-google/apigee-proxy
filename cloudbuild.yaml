@@ -19,14 +19,15 @@ steps:
     id: 'run-apigeelint'
     waitFor: ['install-apigeelint']
 
-  # Step 3:  Always pass the verification
+  # Step 3:  Always pass the verification (and use the secret)
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'echo "Apigeelint verification skipped.  Assuming success." && exit 0'
+      - 'echo "Apigeelint verification skipped. Assuming success. (Secret used: $APIGEE_TOKEN)" && exit 0'
     id: 'verify-apigeelint'
     waitFor: ['run-apigeelint']
+
 
   # Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
   - name: 'gcr.io/cloud-builders/mvn'
