@@ -16,7 +16,7 @@ steps:
 
   # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
-    entrypoint: 'apigeelint'
+    entrypoint: '/usr/local/nvm/versions/node/v22.15.0/bin/apigeelint'  # Assuming this is the path, adjust if needed
     args:
       - '-s'
       - '/home/andrew/apigee-proxies/apiproxy'
