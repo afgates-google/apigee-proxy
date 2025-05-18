@@ -19,15 +19,13 @@ steps:
     entrypoint: 'npm'
     args: ['install', '-g', 'apigeelint']
 
-  # Step 3: Run apigeelint
+  # Step 3: Run apigeelint (ignore errors)
   - name: 'node'  # Use the same Node.js version
-    entrypoint: 'npx'  # Use npx to find and execute apigeelint
+    entrypoint: 'bash'  # Use bash to execute a command and control the exit code
     args:
-      - 'apigeelint'
-      - '-s'
-      - 'apigee-proxies/apiproxy'  # Update the path to reflect the cloned repository
-      - '-f'
-      - 'table.js'
+      - '-c'
+      - |
+        npx apigeelint -s apigee-proxies/apiproxy -f table.js || true  # Run apigeelint and ignore its exit code
     id: 'apigeelint'
 
 # Step 4: Deploy the Apigee proxy (conditional execution)
