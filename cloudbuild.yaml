@@ -1,54 +1,33 @@
-logsBucket: 'gs://apigee-sdlc-demo_cloudbuild' # Replace with your bucket name
-
+# cloudbuild.yaml
 steps:
-  # Step 1: Install Apigeelint
-  - name: 'node:lts-alpine'
-    entrypoint: 'npm'
+  # Step 1: Install Node.js and npm (if not already part of your base image)
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install', '-g', 'npm@latest'] # Ensure latest npm version
+    env:
+      - 'NPM_CONFIG_UPDATE_NOTIFIER=false' # Suppress npm update messages
+
+  # Step 2: Install apigeelint
+  - name: 'gcr.io/cloud-builders/npm'
     args: ['install', '-g', 'apigeelint']
-    id: 'install-apigeelint'
 
-  # Step 1.5: Find the apigeelint path (temporary step)
-  - name: 'node:lts-alpine'
-    entrypoint: 'bash'  # Use bash to modify PATH
+  # Step 3: Run apigeelint
+  # Replace 'path/to/your/apiproxy' with the actual path to your API proxy bundle
+  # within your repository.
+  # Add other apigeelint options as needed (e.g., -f for format, -e for exclude)
+  - name: 'node' # Node.js is required to run apigeelint
+    entrypoint: 'apigeelint'
     args:
-      - '-c'
-      - 'export PATH="$PATH:/usr/local/lib/node_modules/.bin" && which apigeelint'  # Add to PATH
-    id: 'find-apigeelint-path'
-    waitFor: ['install-apigeelint']
-
-
-# Step 2: Run Apigeelint (and always pass)
-  - name: 'node:lts-alpine'
-    entrypoint: 'bash'  # Use bash to execute with the correct path
-    args:
-      - '-c'
-      - 'apigeelint -s /home/andrew/apigee-proxies/apiproxy -f json -w apigeelint_results.json'  # Replace with actual path
-    id: 'run-apigeelint'
-    waitFor: ['find-apigeelint-path']  # Wait for the path to be found
-
-  # Step 3:  Always pass the verification (and use the secret)
-  - name: 'node:lts-alpine'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'echo "Apigeelint verification skipped. Assuming success."'
-    id: 'verify-apigeelint'
-    waitFor: ['run-apigeelint']
-
-  # Step 4: Deploy Apigee Proxy (using Apigee Maven Plugin)
-  - name: 'gcr.io/cloud-builders/mvn'
-    args:
-      - 'install'
-      - '-Ptest' # Or your specific Maven profile
-      - '-Dapigee.org=${_APIGEE_ORG}'
-      - '-Dapigee.env=${_APIGEE_ENV}'
-      - '-Dapigee.token=${_APIGEE_TOKEN}'
+      - '-s'
+      - '/home/andrew/apigee-proxies/apiproxy' # Path to your API proxy bundle
       - '-f'
-      - 'src/main/apigee/pom.xml' # Path to your Apigee Maven pom.xml
-    id: 'deploy-apigee-proxy'
-    waitFor: ['verify-apigeelint']
+      - 'table.js' # Example format, you can use 'json.js', 'csv.js', etc.
+      # You can add more apigeelint flags here, e.g.:
+      # - '-x' # To specify external plugins
+      # - '-e' # To exclude specific rules (e.g., -e PO001)
 
-# Define substitutions
-substitutions:
-  _APIGEE_ORG: 'apigee-sdlc-demo'
-  _APIGEE_ENV: 'eval'
+# Optional: You can include build artifacts or other steps after linting
+# artifacts:
+#   objects:
+#     location: 'gs://your-artifact-bucket'
+#     paths:
+#       - 'apigeelint_report.txt' # If you output the report to a file
