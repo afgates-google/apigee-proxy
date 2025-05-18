@@ -25,8 +25,6 @@ steps:
   id: 'run-apigeelint'
   waitFor: ['install-apigeelint'] # Crucially, wait for apigeelint to be installed
 
-# Step 3: Verify Apigeelint success
-# This step remains the same as it just processes the output file.
 - name: 'gcr.io/cloud-builders/gcloud' # Or any image with 'jq' or similar JSON parser
   entrypoint: 'bash'
   args:
