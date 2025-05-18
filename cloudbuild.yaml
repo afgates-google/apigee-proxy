@@ -37,7 +37,7 @@ steps:
     entrypoint: 'npm'
     args: ['root', '-g']
     id: 'npm-global-root'
-    
+
   # Diagnostic Step G: List contents of apigeelint package
   - name: 'node'
     entrypoint: 'bash'
@@ -45,6 +45,14 @@ steps:
       - '-c'
       - 'ls -l /usr/local/lib/node_modules/apigeelint'
     id: 'list-apigeelint-package'
+
+  # Diagnostic Step H: List contents of global node_modules directory
+  - name: 'node'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'ls -l /usr/local/lib/node_modules'
+    id: 'list-global-node-modules'
 
     # Step 3: Run apigeelint
   - name: 'node'  # Use the same Node.js version
